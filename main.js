@@ -286,7 +286,79 @@ document.getElementById('start-t14').onclick = () => {
 };
 
 
+
+// --- Phase 5: Community Fixes ---
+
+// T15: YouTube Embed (168h Timer)
+let player;
+document.getElementById('start-t15').onclick = () => {
+    logger.log('Starting T15: YouTube Embed (168h Timer)...');
+
+    if (window.YT) {
+        initPlayer();
+        return;
+    }
+
+    // Load YouTube IFrame API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    window.onYouTubeIframeAPIReady = () => {
+        logger.log('YouTube API Ready');
+        initPlayer();
+    };
+};
+
+function initPlayer() {
+    if (player) {
+        player.destroy();
+    }
+
+    player = new YT.Player('youtube-container', {
+        height: '100%',
+        width: '100%',
+        videoId: 'gSvU-flG6FY', // 168 Hour Timer
+        playerVars: {
+            'playsinline': 1,
+            'autoplay': 1,
+            'controls': 0,
+            'enablejsapi': 1,
+            'loop': 1, // Playlist workaround for looping
+            'playlist': 'gSvU-flG6FY'
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    logger.success('T15: YouTube Player Ready');
+    event.target.playVideo();
+}
+
+function onPlayerStateChange(event) {
+    // 1 = Playing, 2 = Paused, 0 = Ended
+    if (event.data === YT.PlayerState.PLAYING) {
+        logger.success('T15: YouTube Video PLAYING (Heartbeat Active)');
+    } else if (event.data === YT.PlayerState.PAUSED) {
+        logger.log('T15: YouTube Video PAUSED', 'error');
+    } else if (event.data === YT.PlayerState.ENDED) {
+        logger.log('T15: YouTube Video ENDED', 'error');
+        event.target.playVideo(); // Force restart
+    }
+}
+
+function onPlayerError(event) {
+    logger.error(`T15: YouTube Player Error: ${event.data}`);
+}
+
 // --- Phase 2: Stress Tests ---
+
 
 document.getElementById('start-t10').onclick = async () => {
     const { runPhotoSlideshow } = await getStressTests();
