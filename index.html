@@ -1,57 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Portal Wake Lock Discovery</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body class="dark-theme">
-        <div id="app">
-            <header>
-                <h1>Portal Discovery Tool</h1>
-                <p>Phase 1: Technical Validation Suite</p>
-            </header>
 
-            <main>
-                <section id="t9-features" class="card">
-                    <h2>T9: Feature Detection</h2>
-                    <ul id="feature-list">
-                        <li>Checking compatibility...</li>
-                    </ul>
-                </section>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Wake Lock Discovery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-                <section id="wake-locks" class="card">
-                    <h2>Wake Lock Controls</h2>
-                    <div class="button-group">
-                        <button id="start-t1" class="btn primary">
-                            Start T1 (Video)
-                        </button>
-                        <button id="start-t2" class="btn primary">
-                            Start T2 (Audio)
-                        </button>
-                        <button id="stop-locks" class="btn secondary">
-                            Stop Locks
-                        </button>
-                    </div>
-                    <div id="lock-status" class="status-indicator">
-                        Locks inactive
-                    </div>
-                </section>
+<body class="dark-theme">
+    <div id="app">
+        <header>
+            <h1>Portal Discovery Tool</h1>
+            <p>Phase 1: Technical Validation Suite</p>
+        </header>
 
-                <section id="interactions" class="card">
-                    <h2>T3/T4: UI & Interactions</h2>
-                    <div class="button-group">
-                        <button id="toggle-fullscreen" class="btn">
-                            Enter Fullscreen
-                        </button>
-                        <button id="test-touch" class="btn">
-                            Test Synthetic Touch (T8)
-                        </button>
-                    </div>
-                </section>
+        <main>
+            <section id="t9-features" class="card">
+                <h2>T9: Feature Detection</h2>
+                <ul id="feature-list">
+                    <li>Checking compatibility...</li>
+                </ul>
+            </section>
 
-                <section id="stress-tests" class="card">
+            <section id="wake-locks" class="card">
+                <h2>Wake Lock Controls</h2>
+                <div class="button-group">
+                    <button id="start-t1" class="btn primary">
+                        Start T1 (Video)
+                    </button>
+                    <button id="start-t2" class="btn primary">
+                        Start T2 (Audio)
+                    </button>
+                    <button id="stop-locks" class="btn secondary">
+                        Stop Locks
+                    </button>
+                </div>
+                <div id="lock-status" class="status-indicator">
+                    Locks inactive
+                </div>
+            </section>
+
+            <section id="interactions" class="card">
+                <h2>T3/T4: UI & Interactions</h2>
+                <div class="button-group">
+                    <button id="toggle-fullscreen" class="btn">
+                        Enter Fullscreen
+                    </button>
+                    <button id="test-touch" class="btn">
+                        Test Synthetic Touch (T8)
+                    </button>
+                </div>
+            </section>
+
+            <section id="stress-tests" class="card">
                 <h2>Phase 2: Stress Tests</h2>
                 <div class="button-group">
                     <button id="start-t10" class="btn primary">Start T10 (Slideshow)</button>
@@ -66,27 +68,33 @@
                     <button id="start-t12" class="btn primary">Start T12 (Canvas Noise)</button>
                     <button id="start-t13" class="btn primary">Start T13 (Audio Osc)</button>
                 </div>
-            </section>
+                <section id="phase-4" class="card">
+                    <h2>Phase 4: Combined Strategies</h2>
+                    <div class="button-group">
+                        <button id="start-t14" class="btn primary">Start T14 (Kitchen Sink)</button>
+                    </div>
+                </section>
 
-            <section id="logger" class="card terminal-card">
+                <section id="logger" class="card terminal-card">
 
 
                     <h2>System Logs</h2>
                     <div id="log-output" class="terminal"></div>
                     <button id="clear-logs" class="btn small">Clear</button>
                 </section>
-            </main>
-        </div>
+        </main>
+    </div>
 
-        <!-- Hidden audio/video elements for wake locks -->
-        <div
-            style="display: none; position: absolute; opacity: 0; pointer-events: none"
-        >
-            <video id="lock-video" loop muted playsinline width="1" height="1">
-            </video>
-            <audio id="lock-audio" loop></audio>
-        </div>
+    <!-- Hidden audio/video elements for wake locks -->
+    <!-- FIX: Changed from display:none to opacity:0.01 to prevent optimization -->
+    <div style="position: absolute; opacity: 0.01; pointer-events: none; top: 0; left: 0; z-index: -1;">
 
-        <script type="module" src="/main.js"></script>
-    </body>
+        <video id="lock-video" loop muted playsinline width="1" height="1">
+        </video>
+        <audio id="lock-audio" loop></audio>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+</body>
+
 </html>

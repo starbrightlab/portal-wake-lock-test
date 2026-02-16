@@ -250,6 +250,42 @@ document.getElementById('start-t13').onclick = async () => {
     }
 };
 
+// --- Phase 4: Combined Strategies ---
+
+// T14: Kitchen Sink (Video + Canvas + Audio + Network)
+let t14Active = false;
+document.getElementById('start-t14').onclick = () => {
+    if (t14Active) {
+        // Reload page to stop everything cleanly
+        window.location.reload();
+        return;
+    }
+
+    t14Active = true;
+    logger.log('Starting T14: Kitchen Sink (MAXIMUM OVERDRIVE)...');
+
+    // 1. Start Video
+    document.getElementById('start-t1').click();
+
+    // 2. Start Canvas Noise
+    document.getElementById('start-t12').click();
+
+    // 3. Start Audio Oscillator
+    document.getElementById('start-t13').click();
+
+    // 4. Periodic Network Request (every 15s)
+    setInterval(() => {
+        fetch(window.location.href, { method: 'HEAD' })
+            .then(() => logger.log('T14: Network keepalive sent', 'info'))
+            .catch(e => logger.error(`T14 Net Error: ${e.message}`));
+    }, 15000);
+
+    document.getElementById('start-t14').innerText = 'Stop T14 (Reloads Page)';
+    document.getElementById('start-t14').classList.replace('primary', 'error-color');
+    logger.success('T14: All subsystems engaged');
+};
+
+
 // --- Phase 2: Stress Tests ---
 
 document.getElementById('start-t10').onclick = async () => {
