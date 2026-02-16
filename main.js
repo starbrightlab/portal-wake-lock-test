@@ -378,11 +378,68 @@ document.getElementById('start-t16').onclick = () => {
     });
 
     // Ensure loop is set
+
+
     userVideo.loop = true;
     logger.log('Please tap the video player to start playback manually.');
 };
 
+// --- Phase 7: Integrated Solution ---
+
+document.getElementById('start-t17').onclick = async () => {
+    logger.log('Starting T17: Integrated Photo Frame...');
+
+    // 1. Prepare the "Hidden" Video (Visible but behind UI)
+    const video = document.createElement('video');
+    video.src = "/assets/silent.mp4";
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+        z-index: 1; /* Behind Slideshow (9999) */
+        background: black;
+    `;
+    document.body.appendChild(video);
+
+    // 2. Play Video on Tap (Trusted Gesture)
+    try {
+        await video.play();
+        logger.success('T17: Background Video Started (Trusted)');
+    } catch (e) {
+        logger.error(`T17 Video Failed: ${e.message}`);
+        return; // Stop if video fails
+    }
+
+    // 3. Request Fullscreen
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+            logger.success('T17: Entered Fullscreen');
+        }
+    } catch (e) {
+        logger.error(`T17 Fullscreen Failed: ${e.message}`);
+    }
+
+    // 4. Start Slideshow Overlay
+    const { runPhotoSlideshow } = await getStressTests();
+    // Pass a callback to stop the video when slideshow exits
+    const stopSlideshow = await runPhotoSlideshow(() => {
+        video.pause();
+        video.remove();
+        logger.log('T17: Photo Frame Stopped');
+    });
+
+    logger.success('T17: Photo Frame Active');
+};
+
 // --- Phase 2: Stress Tests ---
+
 
 
 
