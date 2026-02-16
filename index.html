@@ -82,6 +82,21 @@
                     </div>
                 </section>
 
+                <section id="phase-6" class="card">
+                    <h2>Phase 6: User-Initiated Playback</h2>
+                    <p>This test simulates Plex behavior: a visible video player that requires manual interaction.</p>
+                    <div class="video-container" style="margin-top: 1rem; text-align: center;">
+                        <video id="t16-user-video" controls width="320" height="180" style="background: black;">
+                            <source src="/assets/silent.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="button-group" style="margin-top: 1rem;">
+                        <button id="start-t16" class="btn primary">Enable T16 Logging</button>
+                        <!-- Note: User must press play on the video controls manually -->
+                    </div>
+                </section>
+
                 <section id="logger" class="card terminal-card">
 
 

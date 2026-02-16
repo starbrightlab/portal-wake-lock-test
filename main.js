@@ -357,7 +357,33 @@ function onPlayerError(event) {
     logger.error(`T15: YouTube Player Error: ${event.data}`);
 }
 
+// --- Phase 6: User-Initiated Playback ---
+
+// T16: Visible, User-Triggered Video
+document.getElementById('start-t16').onclick = () => {
+    logger.log('T16: Monitoring User Video...');
+    const userVideo = document.getElementById('t16-user-video');
+
+    userVideo.addEventListener('play', () => {
+        logger.success('T16: User started video playback (Trusted Gesture)');
+    });
+
+    userVideo.addEventListener('pause', () => {
+        logger.log('T16: Video paused', 'info');
+    });
+
+    userVideo.addEventListener('ended', () => {
+        logger.log('T16: Video ended - restarting automatically', 'info');
+        userVideo.play().catch(e => logger.error(`T16 Restart Failed: ${e.message}`));
+    });
+
+    // Ensure loop is set
+    userVideo.loop = true;
+    logger.log('Please tap the video player to start playback manually.');
+};
+
 // --- Phase 2: Stress Tests ---
+
 
 
 document.getElementById('start-t10').onclick = async () => {
