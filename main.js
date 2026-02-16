@@ -49,7 +49,7 @@ function runFeatureDetection() {
     tests.forEach(test => {
         const item = document.createElement('li');
         item.className = 'feature-item';
-        
+
         let result;
         try {
             result = test.check();
@@ -66,7 +66,7 @@ function runFeatureDetection() {
         `;
         list.appendChild(item);
     });
-    
+
     logger.success('T9: Feature detection complete');
 }
 
@@ -83,12 +83,12 @@ const SILENT_VIDEO_URI = "data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21tcDQx
 // Note: Generating a real valid minimal MP4 in JS is complex. 
 // For production tests, the user should provide a real .mp4 file.
 // I'll provide a local fallback path.
-video.src = "/assets/silent.mp4"; 
+video.src = "/assets/silent.mp4";
 audio.src = "/assets/silent.mp3";
 
 async function toggleWakeLock(type) {
     logger.log(`Attempting ${type} wake lock...`);
-    
+
     try {
         if (type === 'video') {
             await video.play();
@@ -142,7 +142,116 @@ document.getElementById('test-touch').onclick = () => {
     logger.success('T8: Synthetic touch event dispatched');
 };
 
+
+
+// --- Phase 3: Alternative Wake Locks ---
+
+// T11: Iframe Reload Timer
+let iframeInterval;
+document.getElementById('start-t11').onclick = () => {
+    if (iframeInterval) {
+        clearInterval(iframeInterval);
+        iframeInterval = null;
+        const existingIframe = document.getElementById('wake-lock-iframe');
+        if (existingIframe) existingIframe.remove();
+        logger.log('T11: Iframe reload timer stopped');
+        return;
+    }
+
+    logger.log('Starting T11: Iframe Reload Timer...');
+    const iframe = document.createElement('iframe');
+    iframe.id = 'wake-lock-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Reload iframe every 2 minutes (120000ms)
+    iframeInterval = setInterval(() => {
+        iframe.src = window.location.href; // Reload current page in iframe
+        logger.log('T11: Iframe reloaded to reset timer', 'info');
+    }, 120000);
+    logger.success('T11: Active (Reloading hidden iframe every 2m)');
+};
+
+// T12: Dynamic Canvas Noise
+let canvasInterval;
+document.getElementById('start-t12').onclick = () => {
+    if (canvasInterval) {
+        clearInterval(canvasInterval);
+        canvasInterval = null;
+        const existingCanvas = document.getElementById('wake-lock-canvas');
+        if (existingCanvas) existingCanvas.remove();
+        logger.log('T12: Canvas noise stopped');
+        return;
+    }
+
+    logger.log('Starting T12: Dynamic Canvas Noise...');
+    const canvas = document.createElement('canvas');
+    canvas.id = 'wake-lock-canvas';
+    canvas.width = 1;
+    canvas.height = 1;
+    canvas.style.opacity = '0.01'; // Almost invisible but rendered
+    canvas.style.position = 'absolute';
+    canvas.style.pointerEvents = 'none';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    canvasInterval = setInterval(() => {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(0, 0, 1, 1);
+        // Log every 5 mins to avoid spam
+    }, 1000); // Update every second
+    logger.success('T12: Active (1Hz canvas updates)');
+};
+
+// T13: Web Audio Oscillator
+let audioContext;
+let oscillator;
+document.getElementById('start-t13').onclick = async () => {
+    if (audioContext) {
+        if (audioContext.state !== 'closed') await audioContext.close();
+        audioContext = null;
+        oscillator = null;
+        logger.log('T13: Web Audio Oscillator stopped');
+        return;
+    }
+
+    logger.log('Starting T13: Web Audio Oscillator...');
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) {
+            throw new Error('Web Audio API not supported');
+        }
+
+        audioContext = new AudioContext();
+        oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(0.1, audioContext.currentTime); // Inaudible low frequency
+
+        gainNode.gain.setValueAtTime(0.01, audioContext.currentTime); // Very quiet
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.start();
+        logger.success('T13: Active (Sub-audible oscillator running)');
+
+        // Handle iOS/Chrome autoplay policy
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+            logger.log('T13: AudioContext resumed successfully');
+        }
+    } catch (err) {
+        logger.error(`T13 Failed: ${err.message}`);
+    }
+};
+
 // --- Phase 2: Stress Tests ---
+
 document.getElementById('start-t10').onclick = async () => {
     const { runPhotoSlideshow } = await getStressTests();
     runPhotoSlideshow();
